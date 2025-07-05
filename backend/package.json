@@ -2,15 +2,17 @@
   "name": "hono-vite-jsx",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node src/server.js",
     "build": "vite build --mode client && vite build"
   },
   "dependencies": {
-    "@hono/node-server": "^1.12.2",
+    "@hono/node-server": "^1.15.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",
     "dotenv": "^17.0.1",
-    "hono": "^4.5.10"
+    "hono": "^4.8.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@hono/vite-build": "^1.1.0",
@@ -18,8 +20,12 @@
     "@nomicfoundation/hardhat-verify": "^2.0.14",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@types/node": "^20.11.17",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
     "ethers": "^5.8.0",
     "hardhat": "^2.25.0",
+    "typescript": "^5.8.3",
     "vite": "^7.0.2"
   }
 }

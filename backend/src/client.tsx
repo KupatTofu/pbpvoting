@@ -1,114 +1,34 @@
-import { createBrowserClient } from '@supabase/ssr';
-import { hc } from 'hono/client';
-import { useEffect, useState } from 'hono/jsx';
-import { render } from 'hono/jsx/dom';
-import type { AppType } from '.';
+import React, { useEffect, useState } from 'react';
 
-const client = hc<AppType>('/');
+const BACKEND_HEALTH_URL = 'http://localhost:3000/health'; // Ganti sesuai URL backend Anda
 
-const supabase = createBrowserClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_ANON_KEY!
-);
+const Client: React.FC = () => {
+  const [backendStatus, setBackendStatus] = useState<string>('Memeriksa...');
+  const [blockchainStatus, setBlockchainStatus] = useState<string>('Memeriksa...');
 
-function App() {
-  const [user, setUser] = useState<null | { id: string }>(null);
-  // Check client-side if user is logged in:
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth event:', event);
-      if (event === 'SIGNED_OUT') {
-        setUser(null);
-      } else {
-        setUser(session?.user!);
-      }
-    });
+    // Cek status backend
+    fetch(BACKEND_HEALTH_URL)
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error('Backend tidak merespon');
+      })
+      .then(data => setBackendStatus(data.status || 'Backend aktif'))
+      .catch(() => setBackendStatus('Backend tidak aktif'));
+
+    // Simulasi cek blockchain (ganti dengan implementasi asli jika ada)
+    setTimeout(() => {
+      setBlockchainStatus('Blockchain aktif');
+    }, 1000);
   }, []);
 
   return (
-    <>
-      <h1>Hono Supabase Auth Example!</h1>
-      <h2>Sign in</h2>
-      {!user ? (
-        <SignIn />
-      ) : (
-        <button
-          type="button"
-          onClick={() => {
-            window.location.href = '/signout';
-          }}
-        >
-          Sign out!
-        </button>
-      )}
-      <h2>Example of API fetch()</h2>
-      <UserDetailsButton />
-      <h2>Example of database read</h2>
-      <p>
-        Note that only authenticated users are able to read from the database!
-      </p>
-      <a href="/countries">Get countries</a>
-    </>
-  );
-}
-
-function SignIn() {
-  return (
-    <>
-      <p>
-        Ready about and enable{' '}
-        <a
-          href="https://supabase.com/docs/guides/auth/auth-anonymous"
-          target="_blank"
-        >
-          anonymous signins here!
-        </a>
-      </p>
-      <button
-        type="button"
-        onClick={async () => {
-          const { data, error } = await supabase.auth.signInAnonymously();
-          if (error) return console.error('Error signing in:', error.message);
-          console.log('Signed in client-side!');
-          alert('Signed in anonymously! User id: ' + data?.user?.id);
-        }}
-      >
-        Anonymous sign in
-      </button>
-    </>
-  );
-}
-
-const UserDetailsButton = () => {
-  const [response, setResponse] = useState<string | null>(null);
-
-  const handleClick = async () => {
-    const response = await client.api.user.$get();
-    const data = await response.json();
-    const headers = Array.from(response.headers.entries()).reduce<
-      Record<string, string>
-    >((acc, [key, value]) => {
-      acc[key] = value;
-      return acc;
-    }, {});
-    const fullResponse = {
-      url: response.url,
-      status: response.status,
-      headers,
-      body: data,
-    };
-    setResponse(JSON.stringify(fullResponse, null, 2));
-  };
-
-  return (
-    <div>
-      <button type="button" onClick={handleClick}>
-        Get My User Details
-      </button>
-      {response && <pre>{response}</pre>}
+    <div style={{ padding: 20, fontFamily: 'Arial, sans-serif' }}>
+      <h2>Status Sistem Voting</h2>
+      <p><strong>Backend API:</strong> {backendStatus}</p>
+      <p><strong>Blockchain Sepolia:</strong> {blockchainStatus}</p>
     </div>
   );
 };
 
-const root = document.getElementById('root')!;
-render(<App />, root);
+export default Client;
