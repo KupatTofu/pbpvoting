@@ -1,12 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './app.jsx';
-import ErrorBoundary from './ErrorBoundary.jsx';
+import App from './app';
+import './index.css'; // Jika ada file CSS global
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    <App />
   </React.StrictMode>
 );
